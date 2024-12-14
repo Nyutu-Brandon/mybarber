@@ -1,5 +1,8 @@
 package com.example.mybarber.ui.theme.screens.clientreservation
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,11 +39,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,9 +54,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mybarber.data.ClientViewModel
+import coil.compose.rememberImagePainter
+import com.example.mybarber.R
+import com.example.mybarber.navigation.ROUTE_HOME_PAGE
 
 @Composable
 fun ClientReservationScreen(navController: NavController) {
+
+    val imageUri = rememberSaveable() {
+        mutableStateOf<Uri?>(null)
+    }
+    val painter = rememberImagePainter(
+        data = imageUri.value ?: R.drawable.placeholder,
+        builder = {crossfade(true)})
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()){
+            uri: Uri? ->
+        uri?.let { imageUri.value = it }
+    }
+    val context = LocalContext.current
+
     var firstname by remember {
         mutableStateOf(value = "")
     }
@@ -68,7 +91,9 @@ fun ClientReservationScreen(navController: NavController) {
         bottomBar = {
             BottomAppBar(
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        navController.navigate(ROUTE_HOME_PAGE)
+                    }) {
                         Icon(Icons.Filled.Home, contentDescription = "Home")
 
                     }
@@ -139,6 +164,16 @@ fun ClientReservationScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(10.dp))
             Button(
                 onClick = {
+                    val clientRepository = ClientViewModel()
+                    clientRepository.saveClient(
+                        firstname = firstname,
+                        lastname = lastname,
+                        time= time,
+                        date = date,
+                        navController = navController,
+                        context = context
+                    )
+
 
 
                 },
@@ -167,6 +202,11 @@ fun ClientReservationScreen(navController: NavController) {
 
 
 }
+
+
+
+
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ClientReservationScreenPreview(){

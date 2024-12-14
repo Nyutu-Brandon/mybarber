@@ -1,5 +1,9 @@
 package com.example.mybarber.ui.theme.screens.clientreservation
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,13 +24,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,10 +42,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberImagePainter
+import com.example.mybarber.R
+import com.example.mybarber.data.ClientViewModel
+import com.example.mybarber.models.Client
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 @Composable
-fun UpdateReservationScreen(navController: NavController){
+fun UpdateReservationScreen(navController: NavController,id: String){
+
+    val imageUri = rememberSaveable() {
+        mutableStateOf<Uri?>(null)
+    }
+    val painter = rememberImagePainter(
+        data = imageUri.value ?: R.drawable.placeholder,
+        builder = {crossfade(true)})
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()){
+            uri: Uri? ->
+        uri?.let { imageUri.value = it }
+    }
+    val context = LocalContext.current
     var firstname by remember {
         mutableStateOf(value = "")
     }
@@ -51,6 +79,28 @@ fun UpdateReservationScreen(navController: NavController){
     var date by remember {
         mutableStateOf(value = "")
     }
+    val currentDataRef  = FirebaseDatabase.getInstance()
+        .getReference().child("SESSIONS/$id")
+    DisposableEffect(Unit){
+        val listener = object  : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val client = snapshot.getValue(Client::class.java)
+                client?.let {
+                    firstname = it.firstname
+                    lastname = it.lastname
+                    time = it.time
+                    date = it.date
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context,error.message, Toast.LENGTH_LONG).show()
+            }
+        }
+        currentDataRef.addValueEventListener(listener)
+        onDispose { currentDataRef.removeEventListener(listener) }
+    }
+
     Scaffold (
         bottomBar = {
             BottomAppBar(
@@ -73,7 +123,7 @@ fun UpdateReservationScreen(navController: NavController){
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "BOOK YOUR SESSION HERE",
+                text = "UPDATE YOUR SESSION DETAILS HERE",
                 fontSize = 25.sp,
                 fontStyle = FontStyle.Normal,
                 fontWeight = FontWeight.Bold,
@@ -126,6 +176,18 @@ fun UpdateReservationScreen(navController: NavController){
             Spacer(modifier = Modifier.height(10.dp))
             Button(
                 onClick = {
+                    val clientRepository = ClientViewModel()
+                    clientRepository.updateClient(
+                        firstname = firstname,
+                        lastname = lastname,
+                        time= time,
+                        date = date,
+                        id = id,
+                        navController = navController,
+                        context = context
+                    )
+
+
 
                 },
 
@@ -146,8 +208,8 @@ fun UpdateReservationScreen(navController: NavController){
         }
     }
 }
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun UpdateReservationScreenPreview(){
-    UpdateReservationScreen(rememberNavController())
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun UpdateReservationScreenPreview(){
+//    UpdateReservationScreen(rememberNavController()"$id,)
+//}

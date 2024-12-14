@@ -30,8 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mybarber.R
 import com.example.mybarber.navigation.ROUTE_CLIENT_RESERVATION
+import com.example.mybarber.navigation.ROUTE_LOGIN
+import com.example.mybarber.navigation.ROUTE_VIEW_CLIENT
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,25 +51,38 @@ fun Dashboard(navController: NavController){
         horizontalAlignment = Alignment.CenterHorizontally){
         TopAppBar( { },
             navigationIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = {
+                    navController.navigate(ROUTE_LOGIN)
+                }) {
                     Icon(imageVector = Icons.Filled.Home,
-                        contentDescription = "Home")
-
+                        contentDescription = "Home"
+                    )
                 }
             }
-            )
-        Row (modifier = Modifier.wrapContentWidth()) {
+
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Row (modifier = Modifier.wrapContentWidth()){
+
+            Text(text = "Book your session here and also check your reservation history",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                fontFamily = FontFamily.SansSerif,
+                color= Color.Black)
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        Row (modifier = Modifier.wrapContentWidth()){
             Card (modifier = Modifier
                 .padding(10.dp)
                 .clickable {
                     navController.navigate(ROUTE_CLIENT_RESERVATION)
                 },
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(10.dp)
+                shape = RoundedCornerShape(40.dp),
+                elevation = CardDefaults.cardElevation(20.dp)
             ){
-                Box (modifier = Modifier.height(70.dp)){
+                Box (modifier = Modifier.height(150.dp)){
                     Image(
-                        painter = painterResource(id = R.drawable.logo),
+                        painter = painterResource(id = R.drawable.booksession),
                         contentDescription = "New Client")
                     Box (modifier = Modifier
                         .matchParentSize()
@@ -86,14 +103,16 @@ fun Dashboard(navController: NavController){
             Card (modifier = Modifier
                 .padding(10.dp)
                 .clickable {
+                    navController.navigate(ROUTE_VIEW_CLIENT)
 
                 },
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(10.dp)
+                shape = RoundedCornerShape(40.dp),
+                elevation = CardDefaults.cardElevation(20.dp)
             ){
-                Box (modifier = Modifier.height(70.dp)){
+                Box (modifier = Modifier.height(150.dp)){
                     Image(
-                        painter = painterResource(id = R.drawable.dashboardpic),
+                        painter = painterResource(id = R.drawable.reservationhistory
+                        ),
                         contentDescription = "New Client")
                     Box (modifier = Modifier
                         .matchParentSize()

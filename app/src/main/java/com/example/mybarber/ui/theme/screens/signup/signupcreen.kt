@@ -68,17 +68,6 @@ fun SignupScreen(navController: NavController){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Image(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .height(80.dp),
-            painter = painterResource(id = R.drawable.loginpic1),
-            contentDescription = "Login Image"
-        )
-
 
         Spacer(modifier = androidx.compose.ui.Modifier.height(30.dp))
         Text(text = "Register Here",
@@ -91,6 +80,15 @@ fun SignupScreen(navController: NavController){
                 .background(Color.Black)
                 .padding(20.dp)
                 .fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Image(
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .height(80.dp),
+            painter = painterResource(id = R.drawable.loginpic1),
+            contentDescription = "Login Image"
         )
         Spacer(modifier = androidx.compose.ui.Modifier.height(10.dp))
         OutlinedTextField(

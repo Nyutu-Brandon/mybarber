@@ -64,16 +64,6 @@ fun LoginScreen (navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Image(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .height(80.dp),
-            painter = painterResource(id = R.drawable.loginpic1),
-            contentDescription = "Login Image"
-        )
         Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = "Please Login Here",
@@ -86,6 +76,15 @@ fun LoginScreen (navController: NavController) {
                 .background(Color.Black)
                 .padding(20.dp)
                 .fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Image(
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .height(80.dp),
+            painter = painterResource(id = R.drawable.loginpic1),
+            contentDescription = "Login Image"
         )
         Spacer(modifier = Modifier.height(10.dp))
         OutlinedTextField(
